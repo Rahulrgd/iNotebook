@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useNavigate } from "react-router-dom";
 
-function Login() {
+function Login(props) {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
@@ -28,15 +28,17 @@ function Login() {
     if (json.success) {
       // save the auth token and redirect
       localStorage.setItem('token', json.authtoken);
-      navigate('/path')
+      props.showAlert("Logged in Successfully", "success");
+      navigate('/')
     } else {
-      alert("Invalid credentials");
+      props.showAlert("Invalid Credentials", "danger");
     }
   };
 
   return (
-    <div>
-      <Form onSubmit={handleSubmit}>
+    <div className="mt-2">
+      <h2>Login to use iNotebook!</h2>
+      <Form onSubmit={handleSubmit} className="mt-2">
         <Form.Group className="mb-3" controlId="email">
           <Form.Label>Email address</Form.Label>
           <Form.Control

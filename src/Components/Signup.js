@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useNavigate } from "react-router-dom";
 
-function Signup() {
+function Signup(props) {
   const [credentials, setCredentials] = useState({
     name: "",
     email: "",
@@ -32,20 +32,26 @@ function Signup() {
     });
     const json = await response.json();
     console.log(json);
-    // save the auth token and redirect
-    localStorage.setItem("token", json.authtoken);
-    navigate("/path");
+    if (json.success) {
+      // save the auth token and redirect
+      localStorage.setItem("token", json.authtoken);
+      props.showAlert("Account created Successfully", "success");
+      navigate("/");
+    } else {
+      props.showAlert("Invalid Details", "danger");
+    }
   };
 
   return (
-    <div>
-      <Form onSubmit={handleSubmit}>
+    <div className="mt-2">
+      <h2>Create your account to use iNotebook!</h2>
+      <Form onSubmit={handleSubmit} className="mt-2">
         <Form.Group className="mb-3" controlId="name">
           <Form.Label>Name</Form.Label>
           <Form.Control
             type="text"
             name="name"
-            value={credentials.email}
+            value={credentials.name}
             onChange={onChange}
           />
         </Form.Group>
@@ -66,6 +72,8 @@ function Signup() {
             name="password"
             value={credentials.password}
             onChange={onChange}
+            minLength={5}
+            required
           />
         </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -73,11 +81,13 @@ function Signup() {
           <Form.Control
             type="password"
             name="cpassword"
-            value={credentials.password}
+            value={credentials.cpassword}
             onChange={onChange}
+            minLength={5}
+            required
           />
         </Form.Group>
-        <Button variant="primary" type="submit">
+        <Button disabled={credentials.password.length < 5 || credentials.cpassword.length < 5} variant="primary" type="submit">
           Submit
         </Button>
       </Form>

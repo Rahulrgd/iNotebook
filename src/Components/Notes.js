@@ -8,12 +8,18 @@ import Modal from "react-bootstrap/Modal";
 import { useRef } from "react";
 import { useState } from "react";
 import Form from "react-bootstrap/Form";
+import { useNavigate } from "react-router";
 
-function Notes() {
+function Notes(props) {
   const context = useContext(noteContext);
   const { notes, getNotes, editNote } = context;
+  let navigate = useNavigate();
   useEffect(() => {
-    getNotes();
+    if (localStorage.getItem("token")) {
+      getNotes();
+    }else{
+      navigate('/login')
+    }
   }, []);
 
   const ref = useRef(null);
@@ -45,6 +51,7 @@ function Notes() {
     e.preventDefault();
     editNote(note.id, note.etitle, note.edescription, note.etag);
     handleClose();
+    props.showAlert("Note updated Successfully", "success");
   };
 
   const close = (e) => {
@@ -59,7 +66,7 @@ function Notes() {
 
   return (
     <>
-      <AddNote />
+      <AddNote showAlert={props.showAlert} />
       <Button
         ref={ref}
         variant="primary"
@@ -128,7 +135,12 @@ function Notes() {
         </div>
         {notes.map((note) => {
           return (
-            <NoteItem key={note._id} updateNote={updateNote} note={note} />
+            <NoteItem
+              key={note._id}
+              updateNote={updateNote}
+              showAlert={props.showAlert}
+              note={note}
+            />
           );
         })}
       </div>
